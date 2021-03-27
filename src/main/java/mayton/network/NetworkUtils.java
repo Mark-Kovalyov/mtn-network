@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Range;
 
 import javax.annotation.concurrent.ThreadSafe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.util.BitSet;
 
 import static java.lang.Long.parseLong;
@@ -18,6 +18,22 @@ public class NetworkUtils {
 
     private NetworkUtils() {
         // no inst
+    }
+
+    @NotNull
+    public static String formatIpV4(@NotNull Inet4Address inet4Address) {
+        byte[] addr = inet4Address.getAddress();
+        return "" + (int) addr[0] + "." + (int) addr[1] + "." + (int) addr[2] + "." + (int) addr[3];
+    }
+
+    @Range(from = 0, to = 4294967295L)
+    public static long fromIpv4toLong(@NotNull InetAddress inetAddress) {
+        byte[] addr = inetAddress.getAddress();
+        if (inetAddress instanceof Inet4Address) {
+            return addr[0] * 256L * 256L * 256L + addr[1] * 256L * 256L + addr[2] * 256 + addr[3];
+        } else {
+            throw new RuntimeException("Unsupported non IPv4 address!");
+        }
     }
 
     @NotNull
@@ -74,10 +90,17 @@ public class NetworkUtils {
             throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Not enought digits");
         }
         try {
-            return 256L * 256 * 256 * parseLong(parts[0]) +
-                    256L * 256 * parseLong(parts[1]) +
-                    256L * parseLong(parts[2]) +
-                    parseLong(parts[3]);
+            long r1 = parseLong(parts[0]);
+            long r2 = parseLong(parts[1]);
+            long r3 = parseLong(parts[2]);
+            long r4 = parseLong(parts[3]);
+            if (r1 >= 256 || r2 >= 256 || r3 >= 256 || r4 >= 256) {
+                throw new IllegalArgumentException("Something wrong in IPv4 components! One of number expressions is out of range!");
+            }
+            return  256L * 256 * 256 * r1 +
+                    256L * 256 * r2 +
+                    256L * r3 +
+                    r4;
         } catch (NumberFormatException ex) {
             throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Number format exception.");
         }
@@ -87,6 +110,27 @@ public class NetworkUtils {
     public static BitSet parseIpV6(@NotNull String ipv6) {
         // TODO:
         throw new RuntimeException("Not implemented yet");
+    }
+
+    /**
+     * The same as ipcalc:
+     * <pre>
+     * $ ipcalc 217.43.26.0 - 217.43.26.127
+     * deaggregate 217.43.26.0 - 217.43.26.127
+     * 217.43.26.0/25
+     * </pre>
+     *
+     *
+     * @param ipv4begin
+     * @param ipv4end
+     * @return
+     */
+    @NotNull
+    public static String detectNetwork(@NotNull String ipv4begin, @NotNull String ipv4end) {
+        long b = parseIpV4(ipv4begin);
+        long e = parseIpV4(ipv4end);
+        long xor = b ^ e;
+        return NetworkUtils.formatIpV4(xor) + "/";
     }
 
 }

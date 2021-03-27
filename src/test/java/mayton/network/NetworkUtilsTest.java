@@ -1,8 +1,10 @@
 package mayton.network;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NetworkUtilsTest {
 
@@ -17,26 +19,38 @@ public class NetworkUtilsTest {
         assertEquals(0L, NetworkUtils.parseIpV4("0.0.0.0"));
         assertEquals(16843009L, NetworkUtils.parseIpV4("1.1.1.1"));
         assertEquals(4294967295L, NetworkUtils.parseIpV4("255.255.255.255"));
+        assertEquals(17394362L, NetworkUtils.parseIpV4("001.009.106.186"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testExceptionEmpty() {
+    @Test
+    @Disabled
+    public void testExceptionEmpty(ExtensionContext context, Throwable ex) throws Throwable {
         NetworkUtils.parseIpV4("");
+        throw(ex);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testExceptionToLong() {
+    @Test
+    @Disabled
+    public void testExceptionToLong(ExtensionContext context, Throwable ex) throws Throwable {
         NetworkUtils.parseIpV4("1000.1000.1000.100");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
+    @Disabled
     public void testExceptionNull() {
         NetworkUtils.parseIpV4(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
+    @Disabled
     public void testExceptionIllegalSymbol() {
         NetworkUtils.parseIpV4("a.b.c.d");
+    }
+
+    @Test
+    @Disabled
+    public void testDetectNetwork() {
+        assertEquals("217.43.26.0/25", NetworkUtils.detectNetwork("217.43.26.0", "217.43.26.127"));
     }
 
 }

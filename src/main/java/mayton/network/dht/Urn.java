@@ -8,8 +8,8 @@ import javax.annotation.concurrent.Immutable;
 public final class Urn {
 
     // <URN> ::= "urn:" <NID> ":" <NSS>
-    private String nid;
-    private String nss;
+    public final String nid;
+    public final String nss;
 
     public Urn(@NotNull String nid,@NotNull String nss) {
         this.nid = nid;

@@ -2,12 +2,13 @@ package mayton.network;
 
 import mayton.network.dht.MagnetLink;
 import mayton.network.dht.Urn;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 public class MagnetLinkTest {
 
