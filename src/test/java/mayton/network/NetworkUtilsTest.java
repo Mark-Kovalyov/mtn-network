@@ -4,6 +4,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NetworkUtilsTest {
@@ -20,6 +24,11 @@ public class NetworkUtilsTest {
         assertEquals(16843009L, NetworkUtils.parseIpV4("1.1.1.1"));
         assertEquals(4294967295L, NetworkUtils.parseIpV4("255.255.255.255"));
         assertEquals(17394362L, NetworkUtils.parseIpV4("001.009.106.186"));
+    }
+
+    @Test void testSigned() throws UnknownHostException {
+        assertEquals("103.251.50.17", NetworkUtils.formatIpV4((Inet4Address) Inet4Address.getByAddress(new byte[] {103,-5,50,17})));
+        assertEquals("103.5.50.17", NetworkUtils.formatIpV4((Inet4Address) Inet4Address.getByAddress(new byte[] {103,5,50,17})));
     }
 
     @Test

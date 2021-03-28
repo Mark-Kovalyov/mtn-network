@@ -20,10 +20,18 @@ public class NetworkUtils {
         // no inst
     }
 
+
+    private static int toUnsigned(byte v) {
+        return ((int) v) < 0 ? (int) v + 256 : v;
+    }
+
     @NotNull
     public static String formatIpV4(@NotNull Inet4Address inet4Address) {
         byte[] addr = inet4Address.getAddress();
-        return "" + (int) addr[0] + "." + (int) addr[1] + "." + (int) addr[2] + "." + (int) addr[3];
+        return "" + toUnsigned(addr[0]) + "." +
+                    toUnsigned(addr[1]) + "." +
+                    toUnsigned(addr[2]) + "." +
+                    toUnsigned(addr[3]);
     }
 
     @Range(from = 0, to = 4294967295L)
