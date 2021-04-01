@@ -10,6 +10,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.BitSet;
 
+import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 
@@ -23,6 +24,32 @@ public class NetworkUtils {
 
     private static int toUnsigned(byte v) {
         return ((int) v) < 0 ? (int) v + 256 : v;
+    }
+
+    
+    @NotNull
+    public static byte[] toByteArray(@NotNull String ipv4) {
+        if (ipv4 == null) {
+            throw new IllegalArgumentException("Unable to parse null argument!");
+        } else if (ipv4.length() < 7) {
+            throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Not enought string length");
+        } else if (ipv4.length() > 15) {
+            throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. String length too long");
+        }
+        String[] parts = StringUtils.split(ipv4, '.');
+        if (parts.length != 4) {
+            throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Not enought digits");
+        }
+        try {
+            byte[] res = new byte[4];
+            for (int i = 0; i < 4; i++) {
+                int ri = Integer.parseInt(parts[i]);
+                res[i] = (byte) (ri > Byte.MAX_VALUE ? ri - 256 : ri);
+            }
+            return res;
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Number format exception.");
+        }
     }
 
     @NotNull

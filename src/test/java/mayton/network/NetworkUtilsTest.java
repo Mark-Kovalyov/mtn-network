@@ -8,9 +8,15 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NetworkUtilsTest {
+
+    @Test
+    void testToByteArr() {
+        assertArrayEquals(new byte[]{95, (byte) (139 - 256), (byte) (214 - 256), 82}, NetworkUtils.toByteArray("95.139.214.82"));
+    }
 
     @Test
     public void testFormat() {
