@@ -72,6 +72,9 @@ public class MagnetLink extends GenericDhtLink {
         return "magnet:?" + sb.substring(1);
     }
 
+    // magnet:?xt=urn:btih:9DF5428ABD92D6BD058994CE15AFEC27BD01BEFF
+    //  &tr=http%3A%2F%2Fbt3.t-ru.org%2Fann%3Fmagnet
+    //  &dn=%D0%9B%D1%8E%D0%B4%D0%B8%20%D0%98%D0%BA%D1%81%20%2F%20X-men%20(%D0%9B%D0%B0%D1%80%D1%80%D0%B8%20%D0%A5%D1%8C%D1%8E%D1%81%D1%82%D0%BE%D0%BD%20%2F%20Larry%20Houston)%20(%D0%A1%D0%B5%D1%80%D0%B8%D0%B8%3A%2033%2C%2071)%20%5B1992%2C%20%D0%9C%D1%83%D0%BB%D1%8C%D1%82%D1%81%D0%B5%D1%80%D0%B8%D0%B0%D0%BB%2C%20TVRip%5D
     public static class Builder {
 
         private List<String> dn;

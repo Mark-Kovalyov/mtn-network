@@ -1,6 +1,7 @@
 package mayton.network;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -10,7 +11,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.BitSet;
 
-import static java.lang.Integer.parseInt;
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
 
@@ -21,21 +21,14 @@ public class NetworkUtils {
         // no inst
     }
 
-
     private static int toUnsigned(byte v) {
         return ((int) v) < 0 ? (int) v + 256 : v;
     }
 
-    
     @NotNull
     public static byte[] toByteArray(@NotNull String ipv4) {
-        if (ipv4 == null) {
-            throw new IllegalArgumentException("Unable to parse null argument!");
-        } else if (ipv4.length() < 7) {
-            throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Not enought string length");
-        } else if (ipv4.length() > 15) {
-            throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. String length too long");
-        }
+        Validate.notNull(ipv4, "Unable to parse null argument!");
+        Validate.inclusiveBetween(7,15,ipv4.length(),"Unable to parse " + ipv4 + " like an IPv4 address. Length is incorrect");
         String[] parts = StringUtils.split(ipv4, '.');
         if (parts.length != 4) {
             throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Not enought digits");
@@ -44,7 +37,7 @@ public class NetworkUtils {
             byte[] res = new byte[4];
             for (int i = 0; i < 4; i++) {
                 int ri = Integer.parseInt(parts[i]);
-                res[i] = (byte) (ri > Byte.MAX_VALUE ? ri - 256 : ri);
+                res[i] = (byte) ri;
             }
             return res;
         } catch (NumberFormatException ex) {
@@ -65,7 +58,15 @@ public class NetworkUtils {
     public static long fromIpv4toLong(@NotNull InetAddress inetAddress) {
         byte[] addr = inetAddress.getAddress();
         if (inetAddress instanceof Inet4Address) {
-            return addr[0] * 256L * 256L * 256L + addr[1] * 256L * 256L + addr[2] * 256 + addr[3];
+            long multiplier = 256L * 256L * 256L;
+            long res = 0;
+            for (int i = 0; i < 4; i++) {
+                long positive = (addr[i] < 0) ? 256 + (long) addr[i] : (long) addr[i];
+                res += positive * multiplier;
+                multiplier >>= 8;
+            }
+            Validate.inclusiveBetween(0L, 4_294_967_295L, res, "The IPv4 long representation must be in range [0..4294967295]");
+            return res;
         } else {
             throw new RuntimeException("Unsupported non IPv4 address!");
         }
@@ -113,13 +114,8 @@ public class NetworkUtils {
 
     @Range(from = 0, to = 4294967295L)
     public static long parseIpV4(@NotNull String ipv4) {
-        if (ipv4 == null) {
-            throw new IllegalArgumentException("Unable to parse null argument!");
-        } else if (ipv4.length() < 7) {
-            throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Not enought string length");
-        } else if (ipv4.length() > 15) {
-            throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. String length too long");
-        }
+        Validate.notNull(ipv4, "Unable to parse null argument!");
+        Validate.inclusiveBetween(7,15,ipv4.length(),"Unable to parse " + ipv4 + " like an IPv4 address. Length is incorrect");
         String[] parts = StringUtils.split(ipv4, '.');
         if (parts.length != 4) {
             throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Not enought digits");
