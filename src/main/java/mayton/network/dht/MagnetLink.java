@@ -2,14 +2,12 @@ package mayton.network.dht;
 
 import com.google.common.net.UrlEscapers;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.concurrent.Immutable;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -26,6 +24,11 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  *     mt (Manifest Topic) — ссылка на метафайл, который содержит список магнетов (MAGMA).
  *
  *     tr (TRacker) — адрес трекера для BitTorrent клиентов.
+ *     pe Specifies fixed peer addresses to connect to. Used to bootstrap discovery of
+ *        peers in the absence of (e.g.) trackers or DHT
+ *        x.pe=hostname:port
+ *        x.pe=ipv4-literal:port
+ *        x.pe=[ipv6-literal]:port
  * </pre>
  */
 public class MagnetLink extends GenericDhtLink {
@@ -39,13 +42,14 @@ public class MagnetLink extends GenericDhtLink {
     private List<String> kt;
     private List<URL> mt;
     private List<URL> tr;
+    private List<Pair<String, Integer>> pe;
 
     public static MagnetLink parse(@NotNull String magnet) {
         // TODO:
         return new MagnetLink.Builder().build();
     }
 
-    public MagnetLink(List<String> dn, Optional<Long> xl, Optional<Long> dl, List<Urn> xt, List<URL> as, List<String> xs, List<String> kt, List<URL> mt, List<URL> tr) {
+    public MagnetLink(List<String> dn, Optional<Long> xl, Optional<Long> dl, List<Urn> xt, List<URL> as, List<String> xs, List<String> kt, List<URL> mt, List<URL> tr, List<Pair<String, Integer>> pe) {
         this.xl = xl;
         this.dl = dl;
         this.dn = dn == null ? Collections.EMPTY_LIST : dn;
@@ -55,21 +59,27 @@ public class MagnetLink extends GenericDhtLink {
         this.kt = kt == null ? Collections.EMPTY_LIST : kt;
         this.mt = mt == null ? Collections.EMPTY_LIST : mt;
         this.tr = tr == null ? Collections.EMPTY_LIST : tr;
+        this.pe = pe == null ? Collections.EMPTY_LIST : pe;
+    }
+    
+    private static String esc(String exp) {
+        return UrlEscapers.urlFragmentEscaper().escape(exp);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (String s : dn) sb.append("&dn=").append(UrlEscapers.urlFragmentEscaper().escape(s));
-        for (Urn urn : xt) sb.append("&xt=").append(urn.toString());
-        for (URL url : as) sb.append("&as=").append(url.getRef());
-        for (String s : xs) sb.append("&xs=").append(UrlEscapers.urlFragmentEscaper().escape(s));
-        for (String s : kt) sb.append("&kt=").append(UrlEscapers.urlFragmentEscaper().escape(s));
-        for (URL url : mt) sb.append("&mt=").append(url);
-        for (URL url : tr) sb.append("&tr=").append(url);
-        if (xl.isPresent()) sb.append("&xl=").append(xl.get());
-        if (dl.isPresent()) sb.append("&dl=").append(dl.get());
-        return "magnet:?" + sb.substring(1);
+        StringJoiner sj = new StringJoiner("&");
+        for (String s : dn) sj.add("dn=" + esc(s));
+        for (Urn urn : xt) sj.add("xt=" + urn.toString());
+        for (URL url : as) sj.add("as=" + url.getRef());
+        for (String s : xs) sj.add("xs=" + esc(s));
+        for (String s : kt) sj.add("kt=" + esc(s));
+        for (URL url : mt) sj.add("mt=" + url);
+        for (URL url : tr) sj.add("tr=" + url);
+        if (xl.isPresent()) sj.add("xl=" + xl.get());
+        if (dl.isPresent()) sj.add("dl=" + dl.get());
+        for (Pair<String,Integer> p : pe) sj.add(String.format("pe=%s:%d", p.getLeft(), p.getRight()));
+        return "magnet:?" + sj;
     }
 
     // magnet:?xt=urn:btih:9DF5428ABD92D6BD058994CE15AFEC27BD01BEFF
@@ -86,12 +96,13 @@ public class MagnetLink extends GenericDhtLink {
         private List<String> kt;
         private List<URL> mt;
         private List<URL> tr;
+        private List<Pair<String, Integer>> pe;
 
         public Builder() {
         }
 
         public MagnetLink build() {
-            return new MagnetLink(dn, xl, dl, xt, as, xs, kt, mt, tr);
+            return new MagnetLink(dn, xl, dl, xt, as, xs, kt, mt, tr, pe);
         }
 
         public Builder withDisplayName(String name) {
@@ -149,6 +160,12 @@ public class MagnetLink extends GenericDhtLink {
         public Builder withTracker(URL tracker) {
             if (tr == null) tr = new ArrayList<>();
             tr.add(tracker);
+            return this;
+        }
+
+        public Builder withPeerAddress(Pair<String, Integer> peer) {
+            if (pe == null) pe = new ArrayList<>();
+            pe.add(peer);
             return this;
         }
 
