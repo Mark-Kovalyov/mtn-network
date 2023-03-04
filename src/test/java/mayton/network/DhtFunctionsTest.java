@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 import static mayton.network.dht.DhtFunctions.generateMagnetLinksPack;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DhtFunctionsTest {
 
@@ -25,8 +25,11 @@ public class DhtFunctionsTest {
 
 
     @Test
-    void test() {
-        // TODO: Implement Transmission-Like Magnet Link protocol named : magnet:?xt=urn:btih:
+    void looksLikeTreeTigerTest() {
+        assertFalse(DhtFunctions.looksLikeTreeTiger(""));
+        assertFalse(DhtFunctions.looksLikeTreeTiger("x"));
+
+        assertTrue(DhtFunctions.looksLikeTreeTiger("6d12a41e72e644f017b6f0e2f7b44c6285f06dd5d2c5b075"));
     }
 
 }

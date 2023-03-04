@@ -93,6 +93,14 @@
             <version>29.0-jre</version>
         </dependency>
 
+        <dependency>
+            <groupId>mayton.libs</groupId>
+            <artifactId>encoders</artifactId>
+            <version>1.4-SNAPSHOT</version>
+        </dependency>
+
+        <!-- io.netty:netty-handler:4.1.87.Final -->
+
     </dependencies>
 
     <build>

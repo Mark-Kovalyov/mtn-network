@@ -11,6 +11,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import static mayton.network.dht.HashUtils.containsBinHexOnly;
 
 public class DhtFunctions {
 
@@ -56,6 +57,34 @@ public class DhtFunctions {
         messageDigest.reset();
         messageDigest.update(arr);
         return encodeBinHex(messageDigest.digest());
+    }
+
+    public static boolean isBinHexEncodedSha1(String s) {
+        if (s.length() != 40) return false;
+        for (char c : s.toLowerCase().toCharArray()) {
+            if (!Character.isDigit(c) || !(c >= 'a' && c <= 'f')) return false;
+        }
+        return true;
+    }
+
+    public static boolean looksLikeTreeTiger2(String s) {
+
+        return false;
+    }
+
+
+
+    public static boolean looksLikeTreeTiger(String s) {
+        if (s.length() != 48) return false;
+        return containsBinHexOnly(s);
+    }
+
+    public static boolean looksLikeAich(String s) {
+        if (s.length() != 40) return false;
+        for (char c : s.toLowerCase().toCharArray()) {
+            if (!Character.isDigit(c) || !(c >= 'a' && c <= 'f')) return false;
+        }
+        return true;
     }
 
     // TODO: Finish development
