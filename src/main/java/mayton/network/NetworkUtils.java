@@ -10,6 +10,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.BitSet;
+import java.util.regex.Pattern;
 
 import static java.lang.Long.parseLong;
 import static java.lang.String.format;
@@ -19,6 +20,12 @@ public class NetworkUtils {
 
     private NetworkUtils() {
         // no inst
+    }
+
+    @NotNull
+    public static String reverseIp(@NotNull String ip) {
+        String[] o = ip.split(Pattern.quote("."));
+        return o[3] + "." + o[2] + "." + o[1] + "." + o[0];
     }
 
     private static int toUnsigned(byte v) {

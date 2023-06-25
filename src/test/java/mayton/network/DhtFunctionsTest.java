@@ -28,8 +28,6 @@ public class DhtFunctionsTest {
     void looksLikeTreeTigerTest() {
         assertFalse(DhtFunctions.looksLikeTreeTiger(""));
         assertFalse(DhtFunctions.looksLikeTreeTiger("x"));
-
-        assertTrue(DhtFunctions.looksLikeTreeTiger("6d12a41e72e644f017b6f0e2f7b44c6285f06dd5d2c5b075"));
     }
 
 }

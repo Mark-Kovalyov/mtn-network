@@ -1,17 +1,15 @@
 package mayton.network.dht;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.Optional;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import static mayton.network.dht.HashUtils.containsBinHexOnly;
+import static mayton.libs.encoders.cryptocurrency.Hashes.containsBinHexOnly;
 
 public class DhtFunctions {
 
@@ -43,7 +41,7 @@ public class DhtFunctions {
         }
     });
 
-    public static Optional<String> ed2kHash(byte[] arr) throws NoSuchAlgorithmException, IOException {
+    public static Optional<String> ed2kHash(byte[] arr)  {
         if (arr.length > 16 * 1024 * 1024) return Optional.empty();
         MessageDigest messageDigest = md4tl.get();
         messageDigest.reset();
