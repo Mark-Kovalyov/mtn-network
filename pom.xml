@@ -6,7 +6,7 @@
 
     <groupId>mayton.libs</groupId>
     <artifactId>network</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.6.1-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

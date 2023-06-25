@@ -2,6 +2,7 @@ package mayton.network.dns;
 
 import mayton.network.NetworkUtils;
 import org.xbill.DNS.*;
+import org.xbill.DNS.Record;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -59,10 +60,6 @@ public class SimpleDnsClient {
         } catch (IOException ex) {
             return Optional.empty();
         }
-    }
-
-    public static Optional<String> demo(String input) {
-        return Optional.of(input);
     }
 
     public static Optional<String> resolvePtr(String input, String dns) {
