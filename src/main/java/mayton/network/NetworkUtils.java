@@ -2,6 +2,7 @@ package mayton.network;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -10,6 +11,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.BitSet;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static java.lang.Long.parseLong;
@@ -17,6 +19,13 @@ import static java.lang.String.format;
 
 @ThreadSafe
 public class NetworkUtils {
+
+    private static Pattern ipv4pattern = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+
+    // 3001:0da8:75a3:0000:0000:8a2e:0370:7334
+    private static Pattern ipv6pattern = Pattern.compile(
+            "[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}",
+            Pattern.CASE_INSENSITIVE);
 
     private NetworkUtils() {
         // no inst
@@ -26,6 +35,28 @@ public class NetworkUtils {
     public static String reverseIp(@NotNull String ip) {
         String[] o = ip.split(Pattern.quote("."));
         return o[3] + "." + o[2] + "." + o[1] + "." + o[0];
+    }
+
+    public static String trimRightAfter(String s, char c) {
+        int i = s.indexOf(c);
+        return s.substring(0, i);
+    }
+
+    /**
+     * Input: 12.0.0.0/8 (AT&T Services)
+     *
+     * @param networkAddress
+     * @return IP range
+     */
+    public Pair<Long,Long> detectIpRangeByNetwork(String networkAddress) {
+        long mask = 0b11111111_00000000_00000000_00000000;
+        long addr = parseIpV4(trimRightAfter(networkAddress,'/'));
+        return Pair.of(addr, addr);
+    }
+
+    public String detectNetworkByIpRange(long ip1, long ip2) {
+
+        return "12.0.0.0/8";
     }
 
     private static int toUnsigned(byte v) {
@@ -119,6 +150,30 @@ public class NetworkUtils {
         return sb.substring(0,39);
     }
 
+    public static Optional<Long> parseIpV4Safe(String ipv4) {
+        if (ipv4 == null || ipv4.isBlank() || ipv4.length() < 7 || ipv4.length() > 15)
+            return Optional.empty();
+        String[] parts = StringUtils.split(ipv4, '.');
+        if (parts.length != 4) {
+            return Optional.empty();
+        }
+        try {
+            long r1 = parseLong(parts[0]);
+            long r2 = parseLong(parts[1]);
+            long r3 = parseLong(parts[2]);
+            long r4 = parseLong(parts[3]);
+            if (r1 >= 256 || r2 >= 256 || r3 >= 256 || r4 >= 256) {
+                return Optional.empty();
+            }
+            return  Optional.of(256L * 256 * 256 * r1 +
+                    256L * 256 * r2 +
+                    256L * r3 +
+                    r4);
+        } catch (NumberFormatException ex) {
+            return Optional.empty();
+        }
+    }
+
     @Range(from = 0, to = 4294967295L)
     public static long parseIpV4(@NotNull String ipv4) {
         Validate.notNull(ipv4, "Unable to parse null argument!");
@@ -146,8 +201,12 @@ public class NetworkUtils {
 
     @NotNull
     public static BitSet parseIpV6(@NotNull String ipv6) {
-        // TODO:
-        throw new RuntimeException("Not implemented yet");
+        return new BitSet(128);
+    }
+
+    @NotNull
+    public static Pair<Long, Long> parseIpV6toLongs(@NotNull String ipv6) {
+        return Pair.of(0x0000_0000_0000_0000L,0x0000_0000_0000_0000L);
     }
 
     /**

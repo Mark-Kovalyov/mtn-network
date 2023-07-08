@@ -11,8 +11,7 @@ import java.net.Inet4Address;
 import java.net.UnknownHostException;
 
 import static mayton.network.NetworkUtils.fromIpv4toLong;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NetworkUtilsTest {
 
@@ -34,13 +33,25 @@ public class NetworkUtilsTest {
     }
 
     @Test
-    public void test() {
+    public void testParseIpV4() {
         assertEquals(0L,          NetworkUtils.parseIpV4("0.0.0.0"));
         assertEquals(16843009L,   NetworkUtils.parseIpV4("1.1.1.1"));
         assertEquals(2155905152L, NetworkUtils.parseIpV4("128.128.128.128"));
         assertEquals(4294967295L, NetworkUtils.parseIpV4("255.255.255.255"));
         assertEquals(17394362L,   NetworkUtils.parseIpV4("001.009.106.186"));
         assertEquals(3395506973L, NetworkUtils.parseIpV4("202.99.83.29"));
+    }
+
+    @Test
+    public void testParseIpV4Safe() {
+        long res = NetworkUtils.parseIpV4Safe("92.150.38.166").get();
+        assertEquals("92.150.38.166", NetworkUtils.formatIpV4(res));
+    }
+
+    @Test
+    public void testParseIpV4ForAmule() {
+        long res = NetworkUtils.parseIpV4Safe("004.002.153.000").get();
+        assertEquals("4.2.153.0", NetworkUtils.formatIpV4(res));
     }
 
     @Test

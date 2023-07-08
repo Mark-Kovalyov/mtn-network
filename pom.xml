@@ -6,7 +6,7 @@
 
     <groupId>mayton.libs</groupId>
     <artifactId>network</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -15,6 +15,28 @@
         <slf4j.version>2.0.0</slf4j.version>
         <logback.version>1.4.8</logback.version>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>prop</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>testtype</name>
+                    <value>prop</value>
+                </property>
+            </activation>
+        </profile>
+        <profile>
+            <id>jupiter</id>
+            <activation>
+                <property>
+                    <name>testtype</name>
+                    <value>jupiter</value>
+                </property>
+            </activation>
+        </profile>
+    </profiles>
 
     <dependencies>
 
@@ -127,19 +149,56 @@
             <version>1.4-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.jqwik</groupId>
+            <artifactId>jqwik</artifactId>
+            <version>1.7.4</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
         <plugins>
+
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
+
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
+
+                <executions>
+                    <execution>
+                        <id>prop</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*Properties.java</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>jupiter</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
+
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.2</version>
