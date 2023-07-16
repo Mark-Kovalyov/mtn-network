@@ -1,6 +1,6 @@
 package mayton.network.dht;
 
-public class Ed2kLink extends GenericDhtLink {
+public class Ed2kLink implements GenericDhtLink {
 
     private String link;
 
@@ -12,7 +12,5 @@ public class Ed2kLink extends GenericDhtLink {
     public String toString() {
         return link;
     }
-
-
 
 }

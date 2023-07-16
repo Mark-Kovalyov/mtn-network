@@ -46,11 +46,11 @@ public class Main {
         SofarTracker tracker = SofarTracker.createUnitLikeTracker("ip", 4412);
 
         CSVParser parser = CSVParser.parse(
-                new FileReader("C:/db/ip2loc/v2/udp-groupped.csv"),
+                new FileReader(System.getProperty("udp-groupped")),
                 CSVFormat.newFormat(';').withFirstRecordAsHeader());
 
         CSVPrinter printer = new CSVPrinter(
-                new FileWriter("C:/db/ip2loc/v2/udp-with-ptr.csv"),
+                new FileWriter(System.getProperty("udp-with-ptr")),
                 CSVFormat.EXCEL);
 
         Random random = new Random();

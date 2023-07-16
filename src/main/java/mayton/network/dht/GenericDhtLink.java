@@ -1,5 +1,5 @@
 package mayton.network.dht;
 
-public class GenericDhtLink {
+public interface GenericDhtLink {
 
 }

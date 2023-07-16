@@ -31,7 +31,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  *        x.pe=[ipv6-literal]:port
  * </pre>
  */
-public class MagnetLink extends GenericDhtLink {
+public class MagnetLink implements GenericDhtLink {
 
     private List<String> dn;
     private Optional<Long> dl;
