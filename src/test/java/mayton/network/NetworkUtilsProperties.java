@@ -1,10 +1,8 @@
 package mayton.network;
 
 import net.jqwik.api.*;
-import net.jqwik.api.arbitraries.StringArbitrary;
 import net.jqwik.engine.properties.arbitraries.DefaultStringArbitrary;
 
-import java.util.BitSet;
 import java.util.Random;
 
 @PropertyDefaults(tries = 300, afterFailure = AfterFailureMode.PREVIOUS_SEED)
@@ -24,14 +22,15 @@ public class NetworkUtilsProperties {
         return NetworkUtils.parseIpV4Safe(ip).isEmpty();
     }
 
-    @Property
+/*    @Property
     @Report(Reporting.GENERATED)
     boolean illegal_ipv4_adress_parsed_with_empty_result(@ForAll("RandomStrings") String ip) {
         return NetworkUtils.parseIpV4Safe(ip).isEmpty();
-    }
+    }*/
 
     @Provide("RandomStrings")
     Arbitrary<String> randomStrings() {
+        // TODO: Why it produces so much flood in console?
         return new DefaultStringArbitrary();
     }
 

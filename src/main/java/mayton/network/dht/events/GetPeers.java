@@ -3,7 +3,6 @@ package mayton.network.dht.events;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.net.InetAddress;
-import java.util.Optional;
 
 @Immutable
 public class GetPeers extends DhtEvent {

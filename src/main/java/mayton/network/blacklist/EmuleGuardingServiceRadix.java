@@ -34,7 +34,7 @@ public class EmuleGuardingServiceRadix implements EmuleGuardingService {
     }
 
     public EmuleGuardingServiceRadix() {
-        String path = System.getProperty("mayton.network.blacklist.EmuleGuardingServiceRadix.path", "~/emule.csv");
+        String path = System.getProperty("mayton.network.blacklist.EmuleGuardingServiceRadix.path", "/tmp/mayton/blacklist/emule-guarding-service-radix");
         logger.info("path = {}", path);
         try {
             logger.info("constructor");
