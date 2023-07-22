@@ -20,10 +20,9 @@ import static java.lang.String.format;
 @ThreadSafe
 public class NetworkUtils {
 
-    private static Pattern ipv4pattern = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+    private static final Pattern IPV_4_PATTERN = Pattern.compile("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
 
-    // 3001:0da8:75a3:0000:0000:8a2e:0370:7334
-    private static Pattern ipv6pattern = Pattern.compile(
+    private static final Pattern IPV_6_PATTERN = Pattern.compile(
             "[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}:[:xdigit:]{0,4}",
             Pattern.CASE_INSENSITIVE);
 
@@ -66,7 +65,7 @@ public class NetworkUtils {
     @NotNull
     public static byte[] toByteArray(@NotNull String ipv4) {
         Validate.notNull(ipv4, "Unable to parse null argument!");
-        Validate.inclusiveBetween(7,15,ipv4.length(),"Unable to parse " + ipv4 + " like an IPv4 address. Length is incorrect");
+        Validate.inclusiveBetween(7, 15, ipv4.length(), "Unable to parse " + ipv4 + " like an IPv4 address. Length is incorrect");
         String[] parts = StringUtils.split(ipv4, '.');
         if (parts.length != 4) {
             throw new IllegalArgumentException("Unable to parse " + ipv4 + " like an IPv4 address. Not enought digits");

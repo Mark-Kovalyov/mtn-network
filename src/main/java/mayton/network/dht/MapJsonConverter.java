@@ -30,7 +30,7 @@ public class MapJsonConverter {
         return dumpBencodedMapWithJackson(stringObjectMap, new DefaultPrettyPrinter());
     }
 
-    private static Optional<String> dumpBencodedMapWithJackson(Map<String, Object> res, PrettyPrinter prettyPrinter) {
+    public static Optional<String> dumpBencodedMapWithJackson(Map<String, Object> res, PrettyPrinter prettyPrinter) {
         try {
             return dumpBencodedMapWithJacksonEx(res, prettyPrinter);
         } catch (IOException e) {
@@ -39,7 +39,7 @@ public class MapJsonConverter {
         return Optional.empty();
     }
 
-    private static void dumpBencodedMapWithJacksonEx(String rootName, Map<String, Object> res, JsonGenerator jGenerator) throws IOException {
+    public static void dumpBencodedMapWithJacksonEx(String rootName, Map<String, Object> res, JsonGenerator jGenerator) throws IOException {
         if (rootName == null) {
             jGenerator.writeStartObject();
         } else {
