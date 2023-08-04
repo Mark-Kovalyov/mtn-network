@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import static mayton.network.dns.DnsServers.dnsServers;
+import static mayton.network.dns.DnsServers.DNS_SERVERS;
 
 public class Main {
 
@@ -45,7 +45,7 @@ public class Main {
             CSVRecord rec = it.next();
             String ip = rec.get("IP");
             String cnt = rec.get("count");
-            String randomDNS = dnsServers[random.nextInt(dnsServers.length)];
+            String randomDNS = DNS_SERVERS[random.nextInt(DNS_SERVERS.length)];
             Optional<String> res = SimpleDnsClient.resolvePtr(ip, randomDNS);
             String ptr = res.isPresent() ? res.get() : "null";
             printer.printRecord(ip, cnt, ptr, randomDNS);

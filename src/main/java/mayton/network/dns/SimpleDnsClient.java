@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Optional;
 
-public class SimpleDnsClient {
+public class SimpleDnsClient implements Resolvable {
 
     private Resolver resolver;
 

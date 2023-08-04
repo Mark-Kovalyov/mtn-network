@@ -3,6 +3,7 @@ package mayton.network.blacklist;
 import com.googlecode.concurrenttrees.radix.ConcurrentRadixTree;
 import com.googlecode.concurrenttrees.radix.RadixTree;
 import com.googlecode.concurrenttrees.radix.node.concrete.DefaultCharArrayNodeFactory;
+import mayton.lib.Uniconf;
 import mayton.network.Ip2locUtils;
 import mayton.network.NetworkUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -34,7 +35,8 @@ public class EmuleGuardingServiceRadix implements EmuleGuardingService {
     }
 
     public EmuleGuardingServiceRadix() {
-        String path = System.getProperty("mayton.network.blacklist.EmuleGuardingServiceRadix.path", "/tmp/mayton/blacklist/emule-guarding-service-radix");
+        Uniconf uniconf = new Uniconf();
+        String path = uniconf.lookupProperty("mayton.network.blacklist.EmuleGuardingServiceRadix.path", "/tmp/mayton/blacklist/emule-guarding-service-radix");
         logger.info("path = {}", path);
         try {
             logger.info("constructor");

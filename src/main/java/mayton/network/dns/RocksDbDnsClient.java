@@ -1,5 +1,6 @@
 package mayton.network.dns;
 
+import mayton.lib.Uniconf;
 import org.apache.commons.lang3.tuple.Pair;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
@@ -18,7 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class RocksDbDnsClient implements CachableDnsClient, RocksDbDnsClientMXBean {
+public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean {
 
     private AtomicInteger requests = new AtomicInteger();
 
@@ -49,14 +50,13 @@ public class RocksDbDnsClient implements CachableDnsClient, RocksDbDnsClientMXBe
     private ReentrantLock dnsClientLock = new ReentrantLock();
     private SimpleDnsClient simpleDnsClient;
 
-    private String dbPath      = System.getProperty("mayton.network.dns.RocksDbDnsClient.dbPath", "/tmp/mayton/network/dns/rocksdb");
-
-    private String dns         = System.getProperty("mayton.network.dns.RocksDbDnsClient.dns", "8.8.8.8");
-    private int    port        = Integer.parseInt(System.getProperty("mayton.network.dns.RocksDbDnsClient.port", "53"));
-    private int    timeout     = Integer.parseInt(System.getProperty("mayton.network.dns.RocksDbDnsClient.timeout", "15"));
-
     private RocksDbDnsClient() {
         logger.info("Constructor...");
+        Uniconf uniconf = new Uniconf();
+        String dbPath      = uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.dbPath", "/tmp/mayton/network/dns/rocksdb");
+        String dns         = uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.dns", "8.8.8.8");
+        int    port        = Integer.parseInt(uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.port", "53"));
+        int    timeout     = Integer.parseInt(uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.timeout", "15"));
         Options options = new Options().setCreateIfMissing(true);
         try {
             logger.info("Opening rocksdb by path = {}", dbPath);
@@ -68,16 +68,12 @@ public class RocksDbDnsClient implements CachableDnsClient, RocksDbDnsClientMXBe
             server.registerMBean(this, objectName);
         } catch (RocksDBException e) {
             logger.error("{}", e.getMessage());
-            throw new RuntimeException("RocksDBException", e);
         } catch (UnknownHostException e) {
             logger.error("{}", e.getMessage());
-            throw new RuntimeException("UnknownHostException", e);
         } catch (MalformedObjectNameException | NotCompliantMBeanException | InstanceAlreadyExistsException e) {
             logger.error("{}", e.getMessage());
-            throw new RuntimeException("MXBean exception", e);
         } catch (MBeanRegistrationException e) {
             logger.error("{}", e.getMessage());
-            throw new RuntimeException("MXBean exception", e);
         }
     }
 
@@ -116,14 +112,15 @@ public class RocksDbDnsClient implements CachableDnsClient, RocksDbDnsClientMXBe
     }
 
     public List<Pair<String,String>> export() {
-        RocksIterator itr = rocksDB.newIterator();
-        itr.seekToFirst();
-        List<Pair<String,String>> pairs = new ArrayList<>();
-        while(itr.isValid()) {
-            itr.next();
-            pairs.add(Pair.of(new String(itr.key()), new String(itr.value())));
+        try(RocksIterator itr = rocksDB.newIterator()) {
+            itr.seekToFirst();
+            List<Pair<String, String>> pairs = new ArrayList<>();
+            while (itr.isValid()) {
+                itr.next();
+                pairs.add(Pair.of(new String(itr.key()), new String(itr.value())));
+            }
+            return pairs;
         }
-        return pairs;
     }
 
     public Optional<String> resolvePtr(String input) {

@@ -2,7 +2,7 @@ package mayton.network.dns;
 
 public class DnsServers {
 
-    public static String[] dnsServers = {
+    public static final String[] DNS_SERVERS = {
             "8.8.8.8",
             "8.8.4.4",
             "76.76.2.0",

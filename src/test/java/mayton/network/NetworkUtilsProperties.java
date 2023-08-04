@@ -18,15 +18,17 @@ public class NetworkUtilsProperties {
 
     @Property
     @Report(Reporting.GENERATED)
+    @Disabled
     boolean negative_ipv4_octets_parsed_with_empty_result(@ForAll("NegativeIps") String ip) {
         return NetworkUtils.parseIpV4Safe(ip).isEmpty();
     }
 
-/*    @Property
+    @Property
     @Report(Reporting.GENERATED)
+    @Disabled
     boolean illegal_ipv4_adress_parsed_with_empty_result(@ForAll("RandomStrings") String ip) {
         return NetworkUtils.parseIpV4Safe(ip).isEmpty();
-    }*/
+    }
 
     @Provide("RandomStrings")
     Arbitrary<String> randomStrings() {

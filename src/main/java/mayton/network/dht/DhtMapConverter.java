@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public class DhtMapConverter {
 
-
-
     public static Optional<Map<String, Object>> convert(byte[] data) {
         Validate.notNull(data, "data argument must not be null");
         BDecoder decoder = new BDecoder();
