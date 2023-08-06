@@ -1,5 +1,6 @@
 package mayton.network.dht;
 
+import io.vavr.control.Either;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.Validate;
@@ -15,39 +16,25 @@ public class SparkSupport {
     private static ThreadLocal<BDecoder> decoderThreadLocal = ThreadLocal.withInitial(() -> new BDecoder());
 
     public static Optional<String> dumpDhtMessageToPlainJson(String binHexDhtMessage) {
-        Validate.notNull(binHexDhtMessage, "binHex argument must not be null");
-        byte[] data = null;
-        try {
-            data = Hex.decodeHex(binHexDhtMessage);
-        } catch (DecoderException e) {
-            return Optional.empty();
-        }
-        Map<String, Object> res = null;
-        try {
-            res = decoderThreadLocal.get().decode(ByteBuffer.wrap(data));
-        } catch (ArrayIndexOutOfBoundsException | Tokenizer.BDecodingException e) {
-            return Optional.empty();
-        }
-        return MapJsonConverter.convertPlain(res);
+        Either<String, String> either = dumpDhtMessageToPlainJsonDebug(binHexDhtMessage);
+        return either.isRight() ? Optional.of(either.get()) : Optional.empty();
     }
 
-    public static Optional<String> dumpDhtMessageToPlainJsonDebug(String binHexDhtMessage) {
+    public static Either<String, String > dumpDhtMessageToPlainJsonDebug(String binHexDhtMessage) {
         Validate.notNull(binHexDhtMessage, "binHex argument must not be null");
-        byte[] data = null;
+        byte[] data;
         try {
             data = Hex.decodeHex(binHexDhtMessage);
         } catch (DecoderException e) {
-            return Optional.of("DHT:ERR:001:" + e.getMessage());
+            return Either.left(e.getMessage());
         }
-        Map<String, Object> res = null;
+        Map<String, Object> res;
         try {
             res = decoderThreadLocal.get().decode(ByteBuffer.wrap(data));
-        } catch (Tokenizer.BDecodingException e) {
-            return Optional.of("DHT:ERR:002:" + e.getMessage());
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return Optional.of("DHT:ERR:003:" + e.getMessage());
+        } catch (Tokenizer.BDecodingException | ArrayIndexOutOfBoundsException e) {
+            return Either.left(e.getMessage());
         }
-        return MapJsonConverter.convertPlain(res);
+        return Either.right(MapJsonConverter.convertPlain(res).get());
     }
 
 }

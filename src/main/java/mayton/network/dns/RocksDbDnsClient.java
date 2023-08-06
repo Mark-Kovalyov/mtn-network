@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.management.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean {
+public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean, Closeable {
 
     private AtomicInteger requests = new AtomicInteger();
 
@@ -37,23 +40,16 @@ public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean {
         return missed.get();
     }
 
-    public static class Singleton {
-        public static RocksDbDnsClient INSTANCE = new RocksDbDnsClient();
-    }
-
-    public static RocksDbDnsClient getInstance() {
-        return RocksDbDnsClient.Singleton.INSTANCE;
-    }
-
     private RocksDB rocksDB;
     private ReentrantLock dbLock = new ReentrantLock();
     private ReentrantLock dnsClientLock = new ReentrantLock();
     private SimpleDnsClient simpleDnsClient;
 
-    private RocksDbDnsClient() {
+    public RocksDbDnsClient(String dbPath) {
         logger.info("Constructor...");
         Uniconf uniconf = new Uniconf();
-        String dbPath      = uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.dbPath", "/tmp/mayton/network/dns/rocksdb");
+        //String dbPath      = uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.dbPath", "/tmp/mayton/network/dns/rocksdb");
+        new File(dbPath).mkdirs();
         String dns         = uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.dns", "8.8.8.8");
         int    port        = Integer.parseInt(uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.port", "53"));
         int    timeout     = Integer.parseInt(uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.timeout", "15"));
@@ -89,6 +85,7 @@ public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean {
     }
 
     private String get(String key) {
+        if (key == null) return null;
         dbLock.lock();
         try {
             byte[] value = rocksDB.get(key.getBytes(StandardCharsets.UTF_8));
@@ -128,7 +125,7 @@ public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean {
         String key = get(input);
         if (key == null) {
             missed.incrementAndGet();
-            Optional<String> ptr = null;
+            Optional<String> ptr;
             dnsClientLock.lock();
             try {
                 ptr = simpleDnsClient.resolvePtr(input);
@@ -140,8 +137,12 @@ public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean {
             }
             return ptr;
         } else {
-            return Optional.of(key);
+            return Optional.empty();
         }
     }
 
+    @Override
+    public void close() throws IOException {
+        if (rocksDB != null) close();
+    }
 }

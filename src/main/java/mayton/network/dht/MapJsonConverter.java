@@ -79,12 +79,14 @@ public class MapJsonConverter {
         jGenerator.writeEndObject();
     }
 
+    // "q": "66696e645f6e6f6465 ( 'find_node' )",
     private static String beautifyBlob(byte[] arr) {
-        if (allContainsAscii(arr)) {
+        return Hex.encodeHexString(arr);
+        /*if (allContainsAscii(arr)) {
             return Hex.encodeHexString(arr) + " ( '" + new String(arr) + "' )";
         } else {
             return Hex.encodeHexString(arr);
-        }
+        }*/
     }
 
     private static boolean allContainsAscii(byte[] arr) {
