@@ -63,7 +63,7 @@ public class MagnetLink implements GenericDhtLink {
     }
     
     private static String esc(String exp) {
-        return UrlEscapers.urlFragmentEscaper().escape(exp);
+        return com.google.common.net.UrlEscapers.urlFragmentEscaper().escape(exp);
     }
 
     @Override
