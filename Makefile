@@ -1,5 +1,5 @@
 install:
-	mvn install -DskipTests
+	mvn install
 	mvn source:jar install
 
 test:
