@@ -143,6 +143,6 @@ public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean, Clo
 
     @Override
     public void close() throws IOException {
-        if (rocksDB != null) close();
+        if (rocksDB != null) rocksDB.close();
     }
 }
