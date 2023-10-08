@@ -48,7 +48,6 @@ public class RocksDbDnsClient implements Resolvable, RocksDbDnsClientMXBean, Clo
     public RocksDbDnsClient(String dbPath) {
         logger.info("Constructor...");
         Uniconf uniconf = new Uniconf();
-        //String dbPath      = uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.dbPath", "/tmp/mayton/network/dns/rocksdb");
         new File(dbPath).mkdirs();
         String dns         = uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.dns", "8.8.8.8");
         int    port        = Integer.parseInt(uniconf.lookupProperty("mayton.network.dns.RocksDbDnsClient.port", "53"));
